@@ -1,0 +1,29 @@
+<!-- Header Component -->
+<div class="bg-white shadow-md py-4 px-6 mb-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-lg font-semibold text-gray-700">Analytics Dashboard</h1>
+            <p class="text-sm text-gray-600">Bienvenido al sistema de monitoreo de datos</p>
+        </div>
+        
+        <!-- Profile menu -->
+        <div class="flex items-center space-x-2">
+            {% if user.is_authenticated %}
+                <span class="text-sm font-medium text-gray-700">{{ user.username }}</span>
+                
+                <!-- START - Block Logout -->
+                <!-- Método post y action para el URL (con el alias 'logout') -->
+                <form method="post" action="{% url 'logout' %}" class="inline-block">
+                    <!-- CSRF token -->
+                    {% csrf_token %}
+                    <button type="submit" class="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700 transition-colors duration-150">
+                        Cerrar Sesión
+                    </button>
+                </form>
+                <!-- END - Block Logout -->
+                
+                <img class="w-8 h-8 rounded-full" src="https://images.unsplash.com/photo-1502378735452-bc7d86632805?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=aa3a807e1bbdfd4364d1f449eaa96d82" alt="User">
+            {% endif %}
+        </div>
+    </div>
+</div>
