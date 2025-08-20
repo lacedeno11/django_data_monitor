@@ -133,7 +133,17 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # API Externa para métricas
-API_URL = 'https://jsonplaceholder.typicode.com/posts'
+# URL base de la API externa django_api_suite
+API_BASE_URL = 'https://luvearel.pythonanywhere.com'
+API_DEMO_USERS_URL = f'{API_BASE_URL}/demo/rest/api/'
+API_LANDING_DATA_URL = f'{API_BASE_URL}/landing/api/'
+
+# URLs de APIs específicas para el dashboard con respaldo a JSONPlaceholder
+API_URLS = {
+    'demo_users': API_DEMO_USERS_URL,
+    'landing_data': API_LANDING_DATA_URL,
+    'backup_api': 'https://jsonplaceholder.typicode.com/users',  # API de respaldo
+}
 
 # Configuración de autenticación
 # Fallo: acceso sin autenticación

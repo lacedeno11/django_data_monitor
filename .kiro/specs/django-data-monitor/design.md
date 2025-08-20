@@ -242,6 +242,65 @@ context = {
 3. **Static Files Testing**: Verificación de archivos estáticos en tests
 4. **Coverage Reports**: Medición de cobertura de código
 
+## Authorization and Security
+
+### Database Configuration
+
+**MySQL Integration**: Migración de SQLite a MySQL para producción
+- **PyMySQL Driver**: Instalación y configuración de PyMySQL como adaptador MySQL
+- **Environment Variables**: Configuración segura mediante variables de entorno
+- **Database Settings**: MYSQLDATABASE, MYSQLUSER, MYSQLPASSWORD, MYSQLHOST, MYSQLPORT
+- **Production Ready**: Base de datos 'security' optimizada para autenticación
+
+### Permission System
+
+**Django Permission Framework**: Sistema nativo de permisos de Django
+- **Model-Based Permissions**: Permisos definidos en modelos Django
+- **Custom Permissions**: Permisos específicos como 'index_viewer' para vistas
+- **Decorator-Based Authorization**: Uso de @permission_required en vistas
+- **Exception Handling**: raise_exception=True para errores 403 personalizados
+
+### User Management
+
+**Django Admin Integration**: Gestión completa de usuarios y permisos
+- **Superuser Access**: Acceso completo sin restricciones de permisos
+- **User Permissions**: Asignación granular de permisos específicos
+- **Group Management**: Organización de usuarios en grupos con permisos compartidos
+- **Permission Testing**: Validación de acceso por usuario y permiso
+
+### Error Handling
+
+**403 Forbidden Pages**: Páginas de error personalizadas
+- **Custom 403 Template**: Plantilla personalizada para errores de autorización
+- **Consistent Design**: Mantenimiento del diseño del sitio en páginas de error
+- **User-Friendly Messages**: Mensajes claros sobre restricciones de acceso
+- **Navigation Options**: Opciones de navegación desde páginas de error
+
+### Authorization Architecture
+
+```mermaid
+graph TB
+    A[Usuario] --> B{¿Autenticado?}
+    B -->|No| C[Redirección a Login]
+    B -->|Sí| D{¿Tiene Permisos?}
+    D -->|No| E[Error 403 Forbidden]
+    D -->|Sí| F[Acceso a Dashboard]
+    
+    subgraph "Sistema de Permisos"
+        G[DashboardModel]
+        H[Permission: index_viewer]
+        I[User Permissions]
+        J[Group Permissions]
+    end
+    
+    subgraph "Base de Datos MySQL"
+        K[Tabla auth_user]
+        L[Tabla auth_permission]
+        M[Tabla auth_user_user_permissions]
+        N[Tabla dashboard_dashboardmodel]
+    end
+```
+
 ## Implementation Considerations
 
 ### Security

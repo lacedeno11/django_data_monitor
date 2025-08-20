@@ -146,3 +146,61 @@ Bienvenido al sistema de monitoreo de datos.js' %}`
   - Hacer commit inicial con estructura base del proyecto
   - Crear rama de desarrollo para cambios de autenticación
   - _Requirements: 7.2, 7.3_
+
+- [ ] 21. Configurar PyMySQL para conexión MySQL
+  - Instalar PyMySQL en el ambiente virtual con `pip install PyMySQL`
+  - Importar PyMySQL en settings.py y ejecutar `pymysql.install_as_MySQLdb()`
+  - Reemplazar configuración de base de datos por MySQL usando variables de entorno
+  - Establecer variables de entorno: MYSQLDATABASE, MYSQLUSER, MYSQLPASSWORD, MYSQLHOST, MYSQLPORT
+  - Crear base de datos MySQL 'security' si no existe
+  - _Requirements: 8.1_
+
+- [ ] 22. Configurar migraciones con base de datos MySQL
+  - Ejecutar `python manage.py makemigrations` con nueva configuración
+  - Ejecutar `python manage.py migrate` para aplicar migraciones a MySQL
+  - Crear superusuario con `python manage.py createsuperuser`
+  - Crear usuarios 'usuario01' y 'usuario02' sin permisos especiales
+  - Verificar redirección a login cuando no autenticado
+  - _Requirements: 8.2_
+
+- [ ] 23. Implementar autorización con decorador @permission_required
+  - Importar `permission_required` en dashboard/views.py
+  - Aplicar decorador `@permission_required('dashboard.index_viewer', raise_exception=True)` a vista index
+  - Verificar que superusuario tiene acceso sin restricciones
+  - Comprobar que usuario01 y usuario02 requieren permisos específicos
+  - _Requirements: 8.3_
+
+- [ ] 24. Crear modelo con permisos personalizados
+  - Crear clase `DashboardModel` en dashboard/models.py
+  - Definir permisos personalizados en Meta class con "index_viewer"
+  - Generar y aplicar migraciones para el nuevo modelo
+  - Verificar creación de permisos en base de datos
+  - _Requirements: 8.4_
+
+- [ ] 25. Configurar permisos de usuario en Django Admin
+  - Acceder al panel de administración Django en /admin/
+  - Modificar usuario 'usuario01' para agregar permiso "Can show to index view"
+  - Dejar usuario 'usuario02' sin permisos especiales
+  - Probar acceso: usuario01 (permitido), usuario02 (403), superusuario (permitido)
+  - _Requirements: 8.5_
+
+- [ ] 26. Implementar página personalizada 403 Forbidden
+  - Crear archivo `templates/403.html` con diseño de error personalizado
+  - Configurar Django para usar plantilla personalizada en errores 403
+  - Probar que usuario02 ve página 403 personalizada al acceder sin permisos
+  - Verificar que la página mantiene el diseño consistente del sitio
+  - _Requirements: 8.6_
+
+- [ ] 27. Actualizar gestión de dependencias con PyMySQL
+  - Ejecutar `pip freeze > requirements.txt` para incluir PyMySQL
+  - Verificar que requirements.txt incluya PyMySQL y todas las dependencias
+  - Documentar configuración de variables de entorno en README.md
+  - Incluir instrucciones para configuración de base de datos MySQL
+  - _Requirements: 8.7_
+
+- [ ] 28. Versionado final con autorización implementada
+  - Crear rama de desarrollo para implementación de autorización
+  - Commitear cambios de PyMySQL, permisos y modelo DashboardModel
+  - Generar pull request para revisión de cambios de autorización
+  - Documentar proceso de configuración de permisos y usuarios
+  - _Requirements: 8.8_

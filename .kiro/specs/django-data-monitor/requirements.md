@@ -83,3 +83,18 @@ Este proyecto consiste en desarrollar un backend analytics server con Django que
 2. WHEN se versiona el código THEN el sistema SHALL usar Git correctamente
 3. WHEN se crean ramas THEN el sistema SHALL seguir flujo de desarrollo apropiado
 4. WHEN se hace deploy THEN el sistema SHALL tener todas las dependencias documentadas
+
+### Requirement 8
+
+**User Story:** Como administrador del sistema, quiero configurar autenticación y autorización mediante Django Admin, para que pueda controlar el acceso a diferentes funcionalidades del dashboard según perfiles de usuario.
+
+#### Acceptance Criteria
+
+1. WHEN se configura PyMySQL THEN el sistema SHALL conectarse a base de datos MySQL con variables de entorno
+2. WHEN se ejecutan migraciones THEN el sistema SHALL crear tablas de usuarios y permisos en MySQL
+3. WHEN se aplica decorador @permission_required THEN el sistema SHALL validar permisos específicos antes del acceso
+4. WHEN se define modelo con permisos THEN el sistema SHALL crear permisos personalizados como 'index_viewer'
+5. WHEN se configuran permisos de usuario THEN el sistema SHALL permitir acceso granular por usuario
+6. WHEN usuario sin permisos accede THEN el sistema SHALL mostrar página 403 personalizada
+7. WHEN se actualiza requirements.txt THEN el sistema SHALL incluir PyMySQL y todas las dependencias
+8. WHEN se versiona con Git THEN el sistema SHALL documentar cambios de autorización en rama específica
