@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.utils import timezone
 from django.db.models import Count, Avg, Max, Min
 from .models import Post, UserStats, DashboardMetrics, APILog
@@ -147,6 +147,7 @@ def generate_function_data():
     }
 
 @login_required
+@permission_required('dashboard.index_viewer', raise_exception=True)
 def index(request):
     # Sync data from API
     sync_success, sync_result = sync_api_data()

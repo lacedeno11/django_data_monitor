@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, UserStats, DashboardMetrics, APILog
+from .models import Post, UserStats, DashboardMetrics, APILog, DashboardModel
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
@@ -31,3 +31,10 @@ class APILogAdmin(admin.ModelAdmin):
     search_fields = ('endpoint', 'error_message')
     readonly_fields = ('timestamp',)
     ordering = ('-timestamp',)
+
+@admin.register(DashboardModel)
+class DashboardModelAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'created_at')
+    search_fields = ('name', 'description')
+    readonly_fields = ('created_at',)
+    ordering = ('-created_at',)
