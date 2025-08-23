@@ -35,4 +35,7 @@ urlpatterns = [
 if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     urlpatterns += staticfiles_urlpatterns()
+else:
+    # En producción, asegurar que whitenoise maneja todo
+    pass
 

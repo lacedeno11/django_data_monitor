@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-t2)k_1y1a25)9-w2o$2qbhxj^84dr*g-z8#n!%&is-9vouoyih
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True para desarrollo local, False para producción
-DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
+# En Railway o con variables de MySQL, DEBUG debe ser False
+if os.environ.get('MYSQLDATABASE'):
+    DEBUG = False  # Forzar DEBUG=False en producción con MySQL
+else:
+    DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.up.railway.app",
@@ -78,20 +82,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-]
-
-# Solo añadir whitenoise en producción (cuando hay variables de MySQL)
-if os.environ.get('MYSQLDATABASE'):
-    MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')
-
-MIDDLEWARE.extend([
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Siempre incluir whitenoise
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-])
+]
 
 ROOT_URLCONF = 'backend_analytics_server.urls'
 
@@ -197,14 +195,29 @@ STATICFILES_DIRS = [
 # Directory where collectstatic will copy all static files for production
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Configuraciones de whitenoise solo en producción
-if os.environ.get('MYSQLDATABASE'):
-    # Use whitenoise for static file serving with compression and caching
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Configuraciones de whitenoise para producción
+# Use whitenoise for static file serving with compression and caching
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Configuraciones adicionales de whitenoise para mejor rendimiento
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
+
+# Configuraciones de seguridad para CDNs en producción
+if not DEBUG:
+    # Permitir carga de recursos externos (CDNs) en producción
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+    X_FRAME_OPTIONS = 'DENY'
     
-    # Configuraciones adicionales de whitenoise para mejor rendimiento
-    WHITENOISE_USE_FINDERS = True
-    WHITENOISE_AUTOREFRESH = True
+    # Configuraciones específicas para Railway
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = False  # Railway maneja esto
+    
+# Permitir carga desde CDNs específicos
+CSP_SCRIPT_SRC = ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"]
+CSP_STYLE_SRC = ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"]
+CSP_FONT_SRC = ["'self'", "https://fonts.gstatic.com"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
