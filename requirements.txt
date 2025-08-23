@@ -28,6 +28,7 @@ httpx==0.28.1
 hyperframe==6.1.0
 idna==3.10
 msgpack==1.1.1
+mysqlclient==2.2.6
 packaging==25.0
 proto-plus==1.26.1
 protobuf==6.31.1

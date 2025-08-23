@@ -27,7 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-t2)k_1y1a25)9-w2o$2qbhxj^84dr*g-z8#n!%&is-9vouoyih'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG = True para desarrollo local, False para producción
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.up.railway.app",
@@ -39,7 +40,20 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8002",
 ]
 
-ALLOWED_HOSTS = ['.up.railway.app', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    '.up.railway.app', 
+    '*.railway.app',
+    'localhost', 
+    '127.0.0.1',
+    '.railway.internal',
+]
+
+# También agregar el dominio específico de Railway si ya lo tienes
+RAILWAY_DOMAIN = os.environ.get('RAILWAY_STATIC_URL', '')
+if RAILWAY_DOMAIN:
+    domain = RAILWAY_DOMAIN.replace('https://', '').replace('http://', '')
+    if domain not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(domain)
 
 # Configuraciones adicionales para CSRF en desarrollo
 CSRF_COOKIE_SECURE = False  # Solo en desarrollo
