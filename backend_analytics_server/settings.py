@@ -12,9 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-import pymysql
-
-pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +25,7 @@ SECRET_KEY = 'django-insecure-t2)k_1y1a25)9-w2o$2qbhxj^84dr*g-z8#n!%&is-9vouoyih
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True para desarrollo local, False para producción
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.up.railway.app",
@@ -81,14 +78,20 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  
+]
+
+# Solo añadir whitenoise en producción (cuando hay variables de MySQL)
+if os.environ.get('MYSQLDATABASE'):
+    MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')
+
+MIDDLEWARE.extend([
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+])
 
 ROOT_URLCONF = 'backend_analytics_server.urls'
 
@@ -117,9 +120,7 @@ API_URL = 'https://jonthz.pythonanywhere.com/landing/api/index/'
 # Configuración de base de datos: usa MySQL en producción, SQLite en desarrollo
 if os.environ.get('MYSQLDATABASE'):
     # Configuración para producción (Railway/MySQL)
-    import pymysql
-    pymysql.install_as_MySQLdb()
-    
+    # Solo importar PyMySQL cuando estemos en producción
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -134,6 +135,13 @@ if os.environ.get('MYSQLDATABASE'):
             },
         }
     }
+    
+    # Configurar PyMySQL como adaptador MySQLdb para Django
+    try:
+        import pymysql
+        pymysql.install_as_MySQLdb()
+    except ImportError:
+        print("Warning: PyMySQL not available, MySQL connection may fail")
 else:
     # Configuración para desarrollo local (SQLite)
     DATABASES = {
@@ -189,12 +197,14 @@ STATICFILES_DIRS = [
 # Directory where collectstatic will copy all static files for production
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Use whitenoise for static file serving with compression and caching
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Configuraciones adicionales de whitenoise para mejor rendimiento
-WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = True
+# Configuraciones de whitenoise solo en producción
+if os.environ.get('MYSQLDATABASE'):
+    # Use whitenoise for static file serving with compression and caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    
+    # Configuraciones adicionales de whitenoise para mejor rendimiento
+    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_AUTOREFRESH = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
