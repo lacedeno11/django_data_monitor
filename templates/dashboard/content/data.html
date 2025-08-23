@@ -160,12 +160,14 @@
       <!-- END - Datos -->
 
       <!-- BEGIN - Gráficos -->
-      <div class="row-span-1 grid gap-6 mb-8 md:grid-cols-12">
+      <div class="row-span-1 grid gap-6 mb-8 md:grid-cols-1">
         <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
           <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
             Respuestas por fecha
           </h4>
-          <canvas id="line"></canvas>
+          <div style="position: relative; height: 400px; width: 100%; min-height: 400px;">
+            <canvas id="line" width="400" height="200" style="display: block; box-sizing: border-box; height: 400px; width: 100%;"></canvas>
+          </div>
         </div>
       </div>
       <!-- END - Gráficos -->
@@ -178,14 +180,43 @@
 <!-- Script para inicializar el gráfico con datos dinámicos -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Datos del gráfico pasados desde Django
-    const chartLabels = JSON.parse('{{ chart_labels_json|escapejs }}');
-    const chartData = JSON.parse('{{ chart_data_json|escapejs }}');
+    console.log('DOM loaded, initializing chart...');
     
-    // Verificar si hay datos disponibles
-    if (chartLabels && chartLabels.length > 0 && chartData && chartData.length > 0) {
-        createLineChart(chartLabels, chartData);
-    } else {
+    // Verificar que Chart.js esté cargado
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js no está cargado');
+        return;
+    }
+    
+    console.log('Chart.js está disponible, versión:', Chart.version);
+    
+    // Verificar que las funciones estén disponibles
+    if (typeof window.createLineChart !== 'function') {
+        console.error('createLineChart function not available');
+        return;
+    }
+    
+    console.log('createLineChart function is available');
+    
+    try {
+        // Datos del gráfico pasados desde Django
+        const chartLabels = JSON.parse('{{ chart_labels_json|escapejs }}');
+        const chartData = JSON.parse('{{ chart_data_json|escapejs }}');
+        
+        console.log('Chart labels from Django:', chartLabels);
+        console.log('Chart data from Django:', chartData);
+        
+        // Verificar si hay datos disponibles
+        if (chartLabels && chartLabels.length > 0 && chartData && chartData.length > 0) {
+            console.log('Valid data found, creating chart...');
+            createLineChart(chartLabels, chartData);
+        } else {
+            console.log('No valid data, using default chart...');
+            initDefaultChart();
+        }
+    } catch (error) {
+        console.error('Error parsing chart data:', error);
+        console.log('Using default chart due to error...');
         initDefaultChart();
     }
 });

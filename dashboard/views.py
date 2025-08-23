@@ -6,6 +6,10 @@ from django.contrib.auth.models import User
 import requests
 from django.conf import settings
 import logging
+import json
+from datetime import datetime, timedelta
+from collections import Counter
+from .models import Post
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -34,15 +38,48 @@ def index(request):
     
     # Valores por defecto en caso de error de API
     total_responses = 0
+    posts = []
+    unique_emails = 0
+    wants_more_info = 0
+    unique_sources = 0
+    last_timestamp = "N/A"
     
     try:
         # Solicitud GET a JSONPlaceholder API
         response = requests.get(settings.API_URL, timeout=10)
         response.raise_for_status()  # Lanza excepción para códigos HTTP de error
-        posts = response.json()
+        api_posts = response.json()
         
         # Calcular número total de respuestas
-        total_responses = len(posts)
+        total_responses = len(api_posts)
+        
+        # Simular datos más realistas para el dashboard
+        # En un escenario real, estos datos vendrían de una API con más información
+        posts = []
+        emails = []
+        sources = ['web', 'mobile', 'api', 'widget']
+        
+        for i, post in enumerate(api_posts[:10]):  # Mostrar solo los primeros 10
+            # Simular datos adicionales
+            email = f"user{post['userId']}@example.com"
+            emails.append(email)
+            source = sources[i % len(sources)]
+            timestamp = datetime.now() - timedelta(days=i, hours=i)
+            wants_info = i % 3 == 0  # Cada tercer post quiere más info
+            
+            posts.append({
+                'email': email,
+                'name': f"Usuario {post['userId']}",
+                'source': source,
+                'timestamp': timestamp.strftime('%Y-%m-%d %H:%M'),
+                'wantsMoreInfo': wants_info
+            })
+        
+        unique_emails = len(set(emails))
+        wants_more_info = sum(1 for post in posts if post['wantsMoreInfo'])
+        unique_sources = len(set(post['source'] for post in posts))
+        last_timestamp = posts[0]['timestamp'] if posts else "N/A"
+        
         logger.info(f"API llamada exitosa: {total_responses} posts obtenidos")
         
     except requests.exceptions.RequestException as e:
@@ -55,6 +92,21 @@ def index(request):
         logger.error(f"Error inesperado: {e}")
         total_responses = 0
     
+    # Datos para el gráfico de líneas
+    # Simular datos de respuestas por fecha (últimos 7 días)
+    chart_labels = []
+    chart_data = []
+    
+    for i in range(7):
+        date = datetime.now() - timedelta(days=6-i)
+        chart_labels.append(date.strftime('%d/%m'))
+        # Simular número de respuestas por día
+        chart_data.append((total_responses // 7) + (i % 3))
+    
+    # Debug: Logging de datos del gráfico
+    logger.info(f"Chart labels: {chart_labels}")
+    logger.info(f"Chart data: {chart_data}")
+    
     # Información adicional para el dashboard
     user_info = {
         'username': request.user.username,
@@ -66,6 +118,13 @@ def index(request):
     data = {
         'title': "Landing Page' Dashboard",
         'total_responses': total_responses,
+        'unique_emails': unique_emails,
+        'wants_more_info': wants_more_info,
+        'unique_sources': unique_sources,
+        'last_timestamp': last_timestamp,
+        'posts': posts,
+        'chart_labels_json': json.dumps(chart_labels),
+        'chart_data_json': json.dumps(chart_data),
         'user_info': user_info,
     }
     return render(request, 'dashboard/index.html', data)
