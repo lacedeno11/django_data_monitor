@@ -1,0 +1,54 @@
+# Diseño de Despliegue: Django en Railway
+
+## 1. Arquitectura General
+- **Aplicación:** Proyecto Django (`django_data_monitor`).
+- **Servidor de Aplicación WSGI:** Gunicorn.
+- **Servidor de Archivos Estáticos:** Whitenoise, integrado en Django.
+- **Plataforma de Despliegue (PaaS):** Railway.
+- **Base de Datos:** MySQL, provisionada como un servicio en Railway.
+- **Repositorio de Código:** GitHub.
+- **Flujo de Despliegue:** Push a la rama `produccion` en GitHub dispara un despliegue automático en Railway.
+
+## 2. Componentes Clave
+
+### 2.1. Configuración de Django (`settings.py`)
+- **`DEBUG`**: `False` en producción.
+- **`SECRET_KEY`**: Gestionada a través de variables de entorno.
+- **`ALLOWED_HOSTS`**: Configurado para aceptar el dominio de Railway (`.up.railway.app`).
+- **`CSRF_TRUSTED_ORIGINS`**: Configurado para aceptar el dominio de Railway.
+- **`DATABASES`**: Configurada para conectar a la base de datos MySQL de Railway usando variables de entorno.
+- **`STATIC_FILES`**:
+    - `whitenoise.middleware.WhiteNoiseMiddleware` añadido al `MIDDLEWARE`.
+    - `STATIC_ROOT` definido para que `collectstatic` sepa dónde dejar los archivos.
+    - `STATICFILES_STORAGE` configurado para `whitenoise.storage.CompressedManifestStaticFilesStorage` para optimización.
+
+### 2.2. Dependencias (`requirements.txt`)
+- El archivo debe contener todas las librerías necesarias para producción, incluyendo:
+    - `django`
+    - `gunicorn`
+    - `whitenoise`
+    - `pymysql`
+    - Cualquier otra dependencia del proyecto.
+
+### 2.3. Configuración de Railway
+- **Servicios:**
+    1.  **Web App:** Conectado al repositorio de GitHub.
+    2.  **Database:** Un servicio de MySQL.
+- **Variables de Entorno:**
+    - Referencias a las variables de la base de datos de Railway (`MYSQLHOST`, `MYSQLUSER`, etc.).
+    - `SECRET_KEY`.
+    - Variables para la creación del superusuario (`DJANGO_SUPERUSER_USERNAME`, etc.).
+- **Comandos de Despliegue:**
+    - **Build Command:** `pip install -r requirements.txt`
+    - **Start Command:** `python manage.py migrate && python manage.py collectstatic --noinput && gunicorn backend_analytics_server.wsgi`
+
+## 3. Proceso de Despliegue
+1.  El desarrollador empuja los cambios a la rama `produccion` en GitHub.
+2.  Railway detecta el push a través de un webhook.
+3.  Railway clona el repositorio.
+4.  Ejecuta el **Build Command** para instalar dependencias.
+5.  Ejecuta el **Start Command**:
+    - Corre migraciones (`migrate`).
+    - Recolecta archivos estáticos (`collectstatic`).
+    - Inicia el servidor `gunicorn`.
+6.  La aplicación está disponible en el dominio público generado por Railway.

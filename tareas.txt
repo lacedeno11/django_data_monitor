@@ -1,0 +1,19 @@
+# Lista de Tareas para el Despliegue de Django en Railway
+
+## Fase 1: Preparación del Código Local
+
+- [ ] 1. Verificar y crear la rama `produccion`.
+- [ ] 2. Instalar `gunicorn`, `whitenoise` y `pymysql`.
+- [ ] 3. Modificar `settings.py` para producción (Base de datos, DEBUG, ALLOWED_HOSTS, Whitenoise, Static files).
+- [ ] 4. Generar el archivo `requirements.txt` actualizado.
+- [ ] 5. Confirmar y subir los cambios a la rama `produccion` en GitHub (usando `push --force` si es necesario).
+
+## Fase 2: Configuración en Railway
+
+- [ ] 6. Crear un nuevo proyecto en Railway.
+- [ ] 7. Añadir un servicio de base de datos MySQL.
+- [ ] 8. Añadir un servicio Web App desde el repositorio de GitHub.
+- [ ] 9. Configurar las variables de entorno (referencias a la DB, SECRET_KEY, superusuario).
+- [ ] 10. Configurar los comandos de Build y Start/Deploy.
+- [ ] 11. Lanzar el despliegue y revisar los logs.
+- [ ] 12. Generar un dominio público y probar la aplicación.
