@@ -145,3 +145,70 @@ def restricted_test(request):
     return render(request, 'dashboard/test.html', {
         'message': 'Solo usuarios no restringidos pueden ver esto'
     })
+
+@login_required
+def emergency_dashboard(request):
+    """Vista de emergencia para dashboard con CSS inline (sin archivos estáticos)"""
+    
+    # Verificar permisos (mismo código que dashboard original)
+    if is_restricted_user(request.user):
+        raise PermissionDenied("No tienes permisos para acceder a esta sección")
+    
+    if not is_dashboard_user(request.user) and not request.user.is_superuser:
+        raise PermissionDenied("Acceso denegado al dashboard")
+    
+    # Valores por defecto
+    total_responses = 0
+    posts = []
+    unique_emails = 0
+    wants_more_info = 0
+    unique_sources = 0
+    last_timestamp = "N/A"
+    
+    try:
+        # Solicitud GET a API
+        response = requests.get(settings.API_URL, timeout=10)
+        response.raise_for_status()
+        api_posts = response.json()
+        
+        if api_posts:
+            total_responses = len(api_posts)
+            posts = api_posts[:10]  # Mostrar los primeros 10
+            
+            # Procesar emails únicos
+            emails = {post.get('correo', '') for post in api_posts if post.get('correo')}
+            unique_emails = len(emails) if emails else 0
+            
+            # Contar quien quiere más info
+            wants_more_info = sum(1 for post in api_posts if post.get('quiere_mas_info', False))
+            
+            # Fuentes únicas
+            sources = {post.get('fuente', '') for post in api_posts if post.get('fuente')}
+            unique_sources = len(sources) if sources else 0
+            
+            # Última respuesta
+            if api_posts:
+                last_post = max(api_posts, key=lambda x: x.get('fecha', ''))
+                last_timestamp = last_post.get('fecha', 'N/A')
+                
+    except Exception as e:
+        print(f"Error en emergency dashboard: {e}")
+    
+    # Datos para el gráfico (simple)
+    chart_data = {
+        'labels': ['17/08', '18/08', '19/08', '20/08', '21/08', '22/08', '23/08'],
+        'data': [0, 0, 1, 2, 1, 0, 0]
+    }
+    
+    context = {
+        'total_respuestas': total_responses,
+        'correos_unicos': unique_emails,
+        'quieren_info': wants_more_info,
+        'fuentes_distintas': unique_sources,
+        'ultima_respuesta': last_timestamp,
+        'posts': posts,
+        'chart_data': json.dumps(chart_data),
+        'user': request.user,
+    }
+    
+    return render(request, 'dashboard/emergency.html', context)
