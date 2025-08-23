@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Data Monitor</title>
+    
+    <!-- Tailwind CSS directo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- CSS básico inline para asegurar funcionamiento -->
+    <style>
+        /* Reset básico */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* Layout básico */
+        .dashboard-layout { 
+            display: flex; 
+            min-height: 100vh; 
+            background-color: #f9fafb; 
+        }
+        
+        .sidebar {
+            width: 256px;
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-content h3 {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-content p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #111827;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .table-header {
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .table-content {
+            padding: 1rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        th {
+            font-weight: 600;
+            color: #374151;
+            background-color: #f9fafb;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #111827;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo" style="margin-bottom: 2rem;">
+                Analytics Server
+            </div>
+            <nav>
+                <a href="#" style="display: block; padding: 0.75rem; color: #374151; text-decoration: none; border-radius: 0.375rem; background-color: #f3f4f6;">
+                    📊 Dashboard
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header" style="margin: -2rem -2rem 2rem -2rem;">
+                <h1 style="font-size: 1.5rem; font-weight: bold; color: #111827;">
+                    Landing Page' Dashboard
+                </h1>
+                <div class="user-info">
+                    <span>admin</span>
+                    <div style="width: 2rem; height: 2rem; background-color: #d1d5db; border-radius: 50%;"></div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #fef3c7; color: #d97706;">📊</div>
+                    <div class="stat-content">
+                        <h3>Número total de respuestas</h3>
+                        <p>{{ total_respuestas|default:"0" }}</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #dcfce7; color: #16a34a;">💎</div>
+                    <div class="stat-content">
+                        <h3>Correos únicos</h3>
+                        <p>{{ correos_unicos|default:"0" }}</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #dbeafe; color: #2563eb;">🔍</div>
+                    <div class="stat-content">
+                        <h3>Quieren más información</h3>
+                        <p>{{ quieren_info|default:"0" }}</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #fce7f3; color: #db2777;">⭐</div>
+                    <div class="stat-content">
+                        <h3>Fuentes distintas</h3>
+                        <p>{{ fuentes_distintas|default:"0" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Last Response -->
+            <div class="card">
+                <h3 style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Última respuesta</h3>
+                <p style="font-size: 1.125rem; color: #111827;">{{ ultima_respuesta|default:"N/A" }}</p>
+            </div>
+            
+            <!-- Data Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 style="font-weight: 600; color: #111827;">Respuestas recientes</h3>
+                </div>
+                <div class="table-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>CORREO</th>
+                                <th>NOMBRE</th>
+                                <th>FUENTE</th>
+                                <th>FECHA</th>
+                                <th>¿QUIERE MÁS INFO?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if posts %}
+                                {% for post in posts %}
+                                <tr>
+                                    <td>{{ post.correo|default:"-" }}</td>
+                                    <td>{{ post.nombre|default:"-" }}</td>
+                                    <td>{{ post.fuente|default:"-" }}</td>
+                                    <td>{{ post.fecha|default:"-" }}</td>
+                                    <td>{{ post.quiere_mas_info|yesno:"Sí,No,N/A" }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #6b7280;">0 RESPUESTAS</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Chart -->
+            <div class="chart-container">
+                <h3 style="margin-bottom: 1rem; font-weight: 600; color: #111827;">Respuestas por fecha</h3>
+                <canvas id="lineChart" width="400" height="200"></canvas>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <script>
+        // Chart.js configuration
+        const ctx = document.getElementById('lineChart').getContext('2d');
+        const chartData = {{ chart_data|safe }};
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels || [],
+                datasets: [{
+                    label: 'Respuestas',
+                    data: chartData.data || [],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

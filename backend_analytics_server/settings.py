@@ -82,7 +82,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Siempre incluir whitenoise
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Whitenoise debe estar después de SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -189,19 +189,37 @@ STATIC_URL = '/static/'
 
 # Directories where Django will search for static files during development
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    BASE_DIR / 'static',
 ]
 
 # Directory where collectstatic will copy all static files for production
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Configuración de finders para archivos estáticos
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
 
 # Configuraciones de whitenoise para producción
-# Use whitenoise basic storage para máxima compatibilidad
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+# Configuración de storage diferente según entorno
+if DEBUG:
+    # En desarrollo, usar el storage básico
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+else:
+    # En producción, usar CompressedManifestStaticFilesStorage con whitenoise
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Configuraciones adicionales de whitenoise para mejor rendimiento
-WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = True
+WHITENOISE_USE_FINDERS = DEBUG  # Solo en desarrollo
+WHITENOISE_AUTOREFRESH = DEBUG  # Solo en desarrollo
+
+# Configuración específica para Railway/producción
+if not DEBUG:
+    # Configurar whitenoise para producción
+    WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'zip', 'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br']
+    WHITENOISE_MAX_AGE = 31536000  # 1 año
+    WHITENOISE_IMMUTABLE_FILE_TEST = lambda path, url: False
 
 # Configuraciones de seguridad para CDNs en producción
 if not DEBUG:
