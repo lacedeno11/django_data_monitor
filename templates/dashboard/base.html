@@ -22,6 +22,21 @@
             }
         }
     </script>
+    
+    <!-- Fallback de estilos básicos si Tailwind falla -->
+    <style>
+        .bg-gray-50 { background-color: #f9fafb; }
+        .bg-white { background-color: #ffffff; }
+        .bg-gray-800 { background-color: #1f2937; }
+        .text-gray-600 { color: #4b5563; }
+        .text-white { color: #ffffff; }
+        .flex { display: flex; }
+        .hidden { display: none; }
+        .w-64 { width: 16rem; }
+        .h-screen { height: 100vh; }
+        .p-4 { padding: 1rem; }
+        .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
+    </style>
 
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
     <script src="{% static 'js/init-alpine.js' %}"></script>

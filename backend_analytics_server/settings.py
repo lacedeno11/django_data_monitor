@@ -196,8 +196,8 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Configuraciones de whitenoise para producción
-# Use whitenoise for static file serving with compression and caching
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Use whitenoise basic storage para máxima compatibilidad
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Configuraciones adicionales de whitenoise para mejor rendimiento
 WHITENOISE_USE_FINDERS = True
