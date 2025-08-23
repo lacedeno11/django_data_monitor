@@ -77,21 +77,3 @@ class APILog(models.Model):
     
     def __str__(self):
         return f"API Call {self.endpoint} - {self.status_code} ({self.timestamp})"
-
-class DashboardModel(models.Model):
-    """
-    Modelo para permisos personalizados del dashboard
-    """
-    name = models.CharField(max_length=100, help_text="Nombre del dashboard")
-    description = models.TextField(blank=True, help_text="Descripción del dashboard")
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        permissions = [
-            ("index_viewer", "Can show to index view (function-based)"),
-        ]
-        verbose_name = "Dashboard Model"
-        verbose_name_plural = "Dashboard Models"
-    
-    def __str__(self):
-        return self.name
