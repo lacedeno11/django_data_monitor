@@ -1,40 +1,64 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Backend - Login</title>
+    <title>403 Forbidden - Django Data Monitor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet" />
-
-    <!-- Local stylesheets -->
-    <link rel="stylesheet" href="{% static 'css/tailwind.output.css' %}">
-
+    <link rel="stylesheet" href="{% static 'css/tailwind.output.css' %}" />
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-
-    <!-- Local script files -->
     <script src="{% static 'js/init-alpine.js' %}"></script>
-
 </head>
 
 <body>
-    <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
-        <div class="flex items-center justify-center flex-1">
-            <div class="max-w-md p-6 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800">
-                <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">403 Forbidden</h1>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">You do not have permission to access this page.</p>
-                <div class="mt-6 flex justify-center">
-                    <a href="{% url 'login' %}"
-                        class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                        Regresar al inicio de sesión
-                    </a>
+    <div class="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
+        <div class="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl dark:bg-gray-800">
+            <div class="flex flex-col overflow-y-auto md:flex-row">
+                <div class="h-32 md:h-auto md:w-1/2">
+                    <img aria-hidden="true" class="object-cover w-full h-full dark:hidden"
+                        src="{% static 'img/login-office.jpeg' %}" alt="Office" />
+                    <img aria-hidden="true" class="hidden object-cover w-full h-full dark:block"
+                        src="{% static 'img/login-office-dark.jpeg' %}" alt="Office" />
+                </div>
+                <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
+                    <div class="w-full text-center">
+                        <div class="flex justify-center mb-6">
+                            <div class="p-3 rounded-full bg-red-100 dark:bg-red-900">
+                                <svg class="w-12 h-12 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <h1 class="mb-4 text-4xl font-bold text-red-600 dark:text-red-400">403</h1>
+                        <h2 class="mb-4 text-2xl font-semibold text-gray-700 dark:text-gray-200">Access Forbidden</h2>
+                        <p class="mb-6 text-gray-600 dark:text-gray-400">
+                            You don't have permission to access this resource.
+                        </p>
+
+                        {% if user.is_authenticated %}
+                        <div class="mb-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Logged in as: <strong class="text-gray-800 dark:text-gray-200">{{ user.username }}</strong>
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        <div class="space-y-3">
+                            <a href="{% url 'login' %}" 
+                               class="block w-full px-4 py-2 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700">
+                                Try Again
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </body>
-
 </html>
