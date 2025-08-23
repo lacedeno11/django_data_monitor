@@ -1,4 +1,4 @@
-# Lista de Tareas para el Despliegue de Django en Railway
+railway variables set MYSQLDATABASE='${{MySQL.MYSQLDATABASE}}' MYSQLUSER='${{MySQL.MYSQLUSER}}' MYSQLPASSWORD='${{MySQL.MYSQLPASSWORD}}' MYSQLHOST='${{MySQL.MYSQLHOST}}' MYSQLPORT='${{MySQL.MYSQLPORT}}' --service django_data_monitor# Lista de Tareas para el Despliegue de Django en Railway
 
 ## Fase 1: Preparación del Código Local
 
